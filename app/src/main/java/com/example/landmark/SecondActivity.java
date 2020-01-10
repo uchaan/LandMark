@@ -59,13 +59,30 @@ public class SecondActivity extends AppCompatActivity {
             }
         });
         button.setOnClickListener(new View.OnClickListener() {
+            int Count = 0;
             @Override
             public void onClick(View v) {
-                tts.setSpeechRate(1f);
-                tts.speak(TestT.getText().toString(), TextToSpeech.QUEUE_FLUSH, null);
+                Count++;
+                if (Count%2==1){
+                    tts.setSpeechRate(1f);
+                    tts.speak(TestT.getText().toString(), TextToSpeech.QUEUE_FLUSH, null);
+                } else {
+                    tts.stop();
+                }
+
             }
         });
+    }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        // TTS 객체가 남아있다면 실행을 중지하고 메모리에서 제거한다.
+        if(tts != null){
+            tts.stop();
+            tts.shutdown();
+            tts = null;
+        }
     }
 
 
