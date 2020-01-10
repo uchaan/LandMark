@@ -95,7 +95,6 @@ public class MainActivity extends AppCompatActivity {
         options.setCropFrameColor(ContextCompat.getColor(this, R.color.colorAccent));
         UCrop.of(sourceUri, destinationUri)
                 .withMaxResultSize(300, 300)
-                .withAspectRatio(5f, 5f)
                 .start(this);
     }
 
