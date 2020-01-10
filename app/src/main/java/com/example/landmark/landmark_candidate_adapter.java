@@ -9,6 +9,11 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.MapsInitializer;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
 import com.google.firebase.ml.vision.cloud.landmark.FirebaseVisionCloudLandmark;
 
 import java.util.List;
@@ -16,9 +21,12 @@ import java.util.List;
 public class landmark_candidate_adapter extends RecyclerView.Adapter<landmark_candidate_adapter.ViewHolder>{
     private List<FirebaseVisionCloudLandmark> mData = null;
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+//    public class ViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends RecyclerView.ViewHolder implements OnMapReadyCallback{
         TextView landmark_name ;
         TextView landmark_confidence ;
+        MapView map;
+        GoogleMap landmark_map;
 
         ViewHolder(final View itemView) {
             super(itemView) ;
@@ -26,8 +34,16 @@ public class landmark_candidate_adapter extends RecyclerView.Adapter<landmark_ca
             // 뷰 객체에 대한 참조. (hold strong reference)
             landmark_name = itemView.findViewById(R.id.landmark_candidate_item) ;
             landmark_confidence = itemView.findViewById(R.id.landmark_candidate_confidence) ;
+//            map = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map)
+            map = (MapView) itemView.findViewById(R.id.landmark_candidate_map);
+            if (map != null)
+            {
+                map.onCreate(null);
+                map.onResume();
+                map.getMapAsync(this);
+            }
 
-            itemView.setOnClickListener(new View.OnClickListener() {
+                    itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     Context context = v.getContext();
@@ -41,6 +57,13 @@ public class landmark_candidate_adapter extends RecyclerView.Adapter<landmark_ca
             });
 
 
+        }
+
+        @Override
+        public void onMapReady(GoogleMap googleMap) {
+            // NULL 매우 위험
+            MapsInitializer.initialize(itemView.getContext());
+            landmark_map = googleMap;
         }
     }
 
@@ -68,8 +91,19 @@ public class landmark_candidate_adapter extends RecyclerView.Adapter<landmark_ca
         float confidence = mData.get(position).getConfidence() ;
         holder.landmark_name.setText(name) ;
         holder.landmark_confidence.setText(String.format("%.2f",confidence*100)+"%") ;
-    }
 
+        //여기서 위도경도 받아서 마커 찍어주기(GoogleMap thisMap = holder.landmark_map;)
+    }
+    @Override
+    public void onViewRecycled(landmark_candidate_adapter.ViewHolder holder)
+    {
+        // Cleanup MapView here?
+        if (holder.landmark_map != null)
+        {
+            holder.landmark_map.clear();
+            holder.landmark_map.setMapType(GoogleMap.MAP_TYPE_NONE);
+        }
+    }
     // getItemCount() - 전체 데이터 갯수 리턴.
     @Override
     public int getItemCount() {
