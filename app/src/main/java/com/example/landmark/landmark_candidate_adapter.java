@@ -1,6 +1,7 @@
 package com.example.landmark;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,12 +20,27 @@ public class landmark_candidate_adapter extends RecyclerView.Adapter<landmark_ca
         TextView landmark_name ;
         TextView landmark_confidence ;
 
-        ViewHolder(View itemView) {
+        ViewHolder(final View itemView) {
             super(itemView) ;
 
             // 뷰 객체에 대한 참조. (hold strong reference)
             landmark_name = itemView.findViewById(R.id.landmark_candidate_item) ;
             landmark_confidence = itemView.findViewById(R.id.landmark_candidate_confidence) ;
+
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Context context = v.getContext();
+                    Intent intent = new Intent(context, SecondActivity.class);
+                    intent.putExtra("name", landmark_name.getText().toString());
+                    intent.putExtra("confidence", landmark_confidence.getText().toString());
+
+                    context.startActivity(intent);
+                }
+
+            });
+
+
         }
     }
 

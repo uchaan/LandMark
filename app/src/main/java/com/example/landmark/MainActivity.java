@@ -18,7 +18,9 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.FileUtils;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -50,15 +52,10 @@ public class MainActivity extends AppCompatActivity {
 
     ImageView imageView;
     Button button;
-    TextView textView;
-
     RecyclerView recyclerView;
     List<FirebaseVisionCloudLandmark> init;
-
     private String currentPhotoPath = "";
     FirebaseVisionImage image;
-
-
     private final int GET_GALLERY_IMAGE = 200;
 
 
@@ -167,33 +164,33 @@ public class MainActivity extends AppCompatActivity {
                             // Task completed successfully
                             // ...
                                                                 // 받아온 결과가 처음부터 NULL(랜드마크가 아님)
-                                    if(firebaseVisionCloudLandmarks.isEmpty()){
+                                if(firebaseVisionCloudLandmarks.isEmpty()){
+                                    Toast.makeText(getApplicationContext(),
+                                            "다른 사진으로 재도전!", Toast.LENGTH_LONG).show();
+                                }
+                                else{
+                                    // 런던 시내 안인지 체크하고 아니면 알려주기
+                                    ArrayList<FirebaseVisionCloudLandmark> updated_result =
+                                            inLondonChecker(firebaseVisionCloudLandmarks);
+                                    if(updated_result.isEmpty()){
                                         Toast.makeText(getApplicationContext(),
-                                                "다른 사진으로 재도전!", Toast.LENGTH_LONG).show();
+                                                "런던의 랜드마크가 아니네요! ^^", Toast.LENGTH_LONG).show();
+
+                                        // RecyclerView 초기화
+                                        landmark_candidate_adapter adapter =
+                                                new landmark_candidate_adapter(init);
+                                        recyclerView.setAdapter(adapter) ;
                                     }
+
+                                    // 여기 진입하면 런던시내안이고, 결과 NULL 아님
+                                    // top3 (또는 그 이하) RecyclerView 보여주기
                                     else{
-                                        // 런던 시내 안인지 체크하고 아니면 알려주기
-                                        ArrayList<FirebaseVisionCloudLandmark> updated_result =
-                                                inLondonChecker(firebaseVisionCloudLandmarks);
-                                        if(updated_result.isEmpty()){
-                                            Toast.makeText(getApplicationContext(),
-                                                    "런던의 랜드마크가 아니네요! ^^", Toast.LENGTH_LONG).show();
-
-                                            // RecyclerView 초기화
-                                            landmark_candidate_adapter adapter =
-                                                    new landmark_candidate_adapter(init);
-                                            recyclerView.setAdapter(adapter) ;
-                                        }
-
-                                        // 여기 진입하면 런던시내안이고, 결과 NULL 아님
-                                        // top3 (또는 그 이하) RecyclerView 보여주기
-                                        else{
-                                            int min_item = Math.min(3, updated_result.size());                                       
-                                            landmark_candidate_adapter adapter =
-                                                    new landmark_candidate_adapter(updated_result.subList(0,min_item));
-                                            recyclerView.setAdapter(adapter) ;
-                                        }
+                                        int min_item = Math.min(3, updated_result.size());
+                                        landmark_candidate_adapter adapter =
+                                                new landmark_candidate_adapter(updated_result.subList(0,min_item));
+                                        recyclerView.setAdapter(adapter) ;
                                     }
+                                }
                         }
                     })
                     .addOnFailureListener(new OnFailureListener() {
@@ -205,14 +202,9 @@ public class MainActivity extends AppCompatActivity {
                                             "랜드마크 인식에 실패했어요 ㅜㅜ", Toast.LENGTH_LONG).show();
                         }
                     });
-
-
-
         } else if (resultCode == UCrop.RESULT_ERROR) {
             final Throwable cropError = UCrop.getError(data);
         }
-        
-              
     }
 
     // 랜드마크의 위치가 런던 시내 이내인지 확인하고 sorted arraylist 반환
@@ -235,8 +227,9 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         }
-
         return updated_arr;
     }
+
+
 
 }
