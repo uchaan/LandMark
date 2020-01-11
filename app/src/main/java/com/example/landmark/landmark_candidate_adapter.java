@@ -6,15 +6,21 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.ml.vision.cloud.landmark.FirebaseVisionCloudLandmark;
+import com.google.firebase.ml.vision.common.FirebaseVisionLatLng;
 
 import java.util.List;
 
@@ -27,6 +33,8 @@ public class landmark_candidate_adapter extends RecyclerView.Adapter<landmark_ca
         TextView landmark_confidence ;
         MapView map;
         GoogleMap landmark_map;
+        MarkerOptions marker;
+
 
         ViewHolder(final View itemView) {
             super(itemView) ;
@@ -34,8 +42,9 @@ public class landmark_candidate_adapter extends RecyclerView.Adapter<landmark_ca
             // 뷰 객체에 대한 참조. (hold strong reference)
             landmark_name = itemView.findViewById(R.id.landmark_candidate_item) ;
             landmark_confidence = itemView.findViewById(R.id.landmark_candidate_confidence) ;
-//            map = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map)
             map = (MapView) itemView.findViewById(R.id.landmark_candidate_map);
+            marker = new MarkerOptions();
+
             if (map != null)
             {
                 map.onCreate(null);
@@ -43,7 +52,7 @@ public class landmark_candidate_adapter extends RecyclerView.Adapter<landmark_ca
                 map.getMapAsync(this);
             }
 
-                    itemView.setOnClickListener(new View.OnClickListener() {
+            itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     Context context = v.getContext();
@@ -61,9 +70,24 @@ public class landmark_candidate_adapter extends RecyclerView.Adapter<landmark_ca
 
         @Override
         public void onMapReady(GoogleMap googleMap) {
-            // NULL 매우 위험
             MapsInitializer.initialize(itemView.getContext());
             landmark_map = googleMap;
+//            landmark_map.addMarker(new MarkerOptions().position(
+
+            List<FirebaseVisionLatLng> location = mData.get(getAdapterPosition()).getLocations();
+            double lat = location.get(0).getLatitude();
+            double lon = location.get(0).getLongitude();
+
+            marker = new MarkerOptions();
+            marker.position(new LatLng(lat, lon));
+            marker.icon(BitmapDescriptorFactory.fromResource(R.drawable.location_pin));
+            //marker.title();
+            landmark_map.addMarker(marker);
+//            landmark_map.animateCamera(CameraUpdateFactory.newLatLng(marker.getPosition()));
+
+            LatLng curPoint = new LatLng(marker.getPosition().latitude, marker.getPosition().longitude);
+
+            landmark_map.moveCamera(CameraUpdateFactory.newLatLngZoom(curPoint, 14));
         }
     }
 
@@ -93,21 +117,43 @@ public class landmark_candidate_adapter extends RecyclerView.Adapter<landmark_ca
         holder.landmark_confidence.setText(String.format("%.2f",confidence*100)+"%") ;
 
         //여기서 위도경도 받아서 마커 찍어주기(GoogleMap thisMap = holder.landmark_map;)
+        List<FirebaseVisionLatLng> location = mData.get(position).getLocations();
+        double lat = location.get(0).getLatitude();
+        double lon = location.get(0).getLongitude();
+
+//        System.out.println("lat:" + lat);
+//        System.out.println("lon:" + lon);
+
+//        marker = new MarkerOptions();
+//        marker.position(new LatLng(lat, lon));
+//        marker.icon(BitmapDescriptorFactory.fromResource(R.drawable.location_pin));
+//        marker.title(name);
+//        holder.landmark_map.addMarker(marker);
+
+
+//        mGoogleMap2.moveCamera(CameraUpdateFactory.newLatLngZoom(
+//                new LatLng(latitude, longitude), 10));
+
+
+
+
     }
     @Override
     public void onViewRecycled(landmark_candidate_adapter.ViewHolder holder)
     {
-        // Cleanup MapView here?
+        // Cleanup MapView here
         if (holder.landmark_map != null)
         {
             holder.landmark_map.clear();
             holder.landmark_map.setMapType(GoogleMap.MAP_TYPE_NONE);
         }
     }
+
     // getItemCount() - 전체 데이터 갯수 리턴.
     @Override
     public int getItemCount() {
         return mData.size() ;
     }
+
 }
 
