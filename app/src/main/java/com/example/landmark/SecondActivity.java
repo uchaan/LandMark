@@ -5,9 +5,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -19,10 +21,21 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.ExecutionException;
 
 
 import noman.googleplaces.NRPlaces;
@@ -39,7 +52,7 @@ public class SecondActivity extends AppCompatActivity implements PlacesListener,
     double lat, lon;
 
     TextView NameT;
-    Button button_show;
+    Button button_show, button_request;
 
     TextView InfoT, WebT, TicketT;
     Button SpeakButton, OpenInfoButton;
@@ -81,6 +94,23 @@ public class SecondActivity extends AppCompatActivity implements PlacesListener,
             @Override
             public void onClick(View v) {
                 showPlaceInformation(new LatLng(lat, lon), PlaceType.RESTAURANT);
+            }
+        });
+
+        button_request = (Button)findViewById(R.id.request);
+        button_request.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                RequestItem item = new RequestItem("restaurant", lat, lon, 500);
+                sendRequest task = new sendRequest();
+                try {
+                    boolean success = task.execute(item).get();
+                    Toast.makeText(v.getContext(), "Request!! : "+success, Toast.LENGTH_SHORT).show();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                }
             }
         });
       
@@ -178,7 +208,6 @@ public class SecondActivity extends AppCompatActivity implements PlacesListener,
                     MarkerOptions markerOptions = new MarkerOptions();
                     markerOptions.position(latLng);
                     markerOptions.title(place.getName());
-//                    markerOptions.snippet(markerSnippet);
                     Marker item = restaurant_map.addMarker(markerOptions);
                     previous_marker.add(item);
 
@@ -250,4 +279,7 @@ public class SecondActivity extends AppCompatActivity implements PlacesListener,
         }
         restaurant_map.addMarker(show_marker);
     }
+
+
+
 }
