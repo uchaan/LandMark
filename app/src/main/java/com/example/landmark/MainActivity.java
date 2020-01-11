@@ -57,6 +57,7 @@ public class MainActivity extends AppCompatActivity {
     private String currentPhotoPath = "";
     FirebaseVisionImage image;
     private final int GET_GALLERY_IMAGE = 200;
+    TextView text_count;
 
 
     @Override
@@ -68,7 +69,8 @@ public class MainActivity extends AppCompatActivity {
         permission permission_check = new permission();
         permission_check.checkPermissions(MainActivity.this);
 
-        imageView = (ImageView)findViewById(R.id.image);
+        imageView = (ImageView) findViewById(R.id.image);
+        text_count = (TextView) findViewById(R.id.landmark_count);
 
         button = (Button)findViewById(R.id.button);
         button.setOnClickListener(new View.OnClickListener() {
@@ -170,6 +172,7 @@ public class MainActivity extends AppCompatActivity {
                                 if(firebaseVisionCloudLandmarks.isEmpty()){
                                     Toast.makeText(getApplicationContext(),
                                             "다른 사진으로 재도전!", Toast.LENGTH_LONG).show();
+                                    text_count.setVisibility(View.INVISIBLE);
                                 }
                                 else{
                                     // 런던 시내 안인지 체크하고 아니면 알려주기
@@ -178,6 +181,7 @@ public class MainActivity extends AppCompatActivity {
                                     if(updated_result.isEmpty()){
                                         Toast.makeText(getApplicationContext(),
                                                 "런던의 랜드마크가 아니네요! ^^", Toast.LENGTH_LONG).show();
+                                        text_count.setVisibility(View.INVISIBLE);
 
                                         // RecyclerView 초기화
                                         landmark_candidate_adapter adapter =
@@ -189,7 +193,6 @@ public class MainActivity extends AppCompatActivity {
                                     // top3 (또는 그 이하) RecyclerView 보여주기
                                     else{
                                         int min_item = Math.min(3, updated_result.size());
-                                        TextView text_count = findViewById(R.id.landmark_count);
                                         text_count.setText("총 "+min_item+"개를 찾았어요!");
                                         text_count.setVisibility(View.VISIBLE);
 
