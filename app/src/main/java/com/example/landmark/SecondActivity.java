@@ -38,10 +38,10 @@ public class SecondActivity extends AppCompatActivity implements PlacesListener,
     String name, confidence;
     double lat, lon;
 
-    TextView NameT, TestT;
-    Button button_speak, button_show;
+    TextView NameT;
+    Button button_show;
 
-    TextView NameT, InfoT, WebT, TicketT;
+    TextView InfoT, WebT, TicketT;
     Button SpeakButton, OpenInfoButton;
 
     private TextToSpeech tts;
@@ -80,7 +80,7 @@ public class SecondActivity extends AppCompatActivity implements PlacesListener,
         button_show.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showPlaceInformation(new LatLng(lat, lon));
+                showPlaceInformation(new LatLng(lat, lon), PlaceType.RESTAURANT);
             }
         });
       
@@ -175,8 +175,6 @@ public class SecondActivity extends AppCompatActivity implements PlacesListener,
                             = new LatLng(place.getLatitude()
                             , place.getLongitude());
 
-//                    String markerSnippet = getCurrentAddress(latLng);
-
                     MarkerOptions markerOptions = new MarkerOptions();
                     markerOptions.position(latLng);
                     markerOptions.title(place.getName());
@@ -206,16 +204,18 @@ public class SecondActivity extends AppCompatActivity implements PlacesListener,
         MapsInitializer.initialize(getApplicationContext());
         restaurant_map = googleMap;
 
-        MarkerOptions big_ben_marker = new MarkerOptions();
-        big_ben_marker.position(new LatLng(lat, lon));
-        big_ben_marker.icon(BitmapDescriptorFactory.fromResource(R.drawable.big_ben_pin));
-        restaurant_map.addMarker(big_ben_marker);
+//        MarkerOptions big_ben_marker = new MarkerOptions();
+//        big_ben_marker.position(new LatLng(lat, lon));
+//        big_ben_marker.icon(BitmapDescriptorFactory.fromResource(R.drawable.big_ben_pin));
+//        restaurant_map.addMarker(big_ben_marker);
+
+        show_landmark(name);
 
         LatLng curPoint = new LatLng(lat, lon);
         restaurant_map.moveCamera(CameraUpdateFactory.newLatLngZoom(curPoint, 14));
     }
 
-    public void showPlaceInformation(LatLng location)
+    public void showPlaceInformation(LatLng location, String type)
     {
         restaurant_map.clear();//지도 클리어
 
@@ -227,8 +227,27 @@ public class SecondActivity extends AppCompatActivity implements PlacesListener,
                 .key("AIzaSyCbczuPt2sl8N5DOQqCKPvynvN9n55rGak")
                 .latlng(location.latitude, location.longitude)//현재 위치
                 .radius(500) //500 미터 내에서 검색
-                .type(PlaceType.RESTAURANT) //음식점
+                .type(type) //음식점
                 .build()
                 .execute();
+
+        show_landmark(name);
+    }
+
+    // String Parameter 에 따라 다른 아이콘 표시
+    public void show_landmark(String landmark){
+        MarkerOptions show_marker = new MarkerOptions();
+        show_marker.position(new LatLng(lat, lon));
+
+        switch (landmark.toLowerCase()){
+            case "big ben":
+                show_marker.icon(BitmapDescriptorFactory.fromResource(R.drawable.big_ben_pin));
+                break;
+            case "london eye":
+                break;
+            case "tower bridge" :
+                break;
+        }
+        restaurant_map.addMarker(show_marker);
     }
 }
