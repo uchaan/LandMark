@@ -1,7 +1,5 @@
 package com.example.landmark;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
@@ -10,6 +8,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -37,7 +37,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.ExecutionException;
 
-
 import noman.googleplaces.NRPlaces;
 import noman.googleplaces.Place;
 import noman.googleplaces.PlaceType;
@@ -51,10 +50,13 @@ public class SecondActivity extends AppCompatActivity implements PlacesListener,
     String name, confidence;
     double lat, lon;
 
-    TextView NameT;
+
+  
     Button button_show, button_request;
 
     TextView InfoT, WebT, TicketT;
+    Button button_show;
+    TextView NameT, InfoT, WebT, TicketT;
     Button SpeakButton, OpenInfoButton;
 
     private TextToSpeech tts;
@@ -62,8 +64,6 @@ public class SecondActivity extends AppCompatActivity implements PlacesListener,
     List<Marker> previous_marker = null;
     MapView map;
     GoogleMap restaurant_map;
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
