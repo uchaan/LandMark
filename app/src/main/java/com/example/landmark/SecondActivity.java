@@ -23,6 +23,7 @@ import static android.speech.tts.TextToSpeech.ERROR;
 public class SecondActivity extends AppCompatActivity {
 
     String name, confidence;
+    double lat, lon;
     TextView NameT, TestT;
     Button button;
     private TextToSpeech tts;
@@ -38,17 +39,18 @@ public class SecondActivity extends AppCompatActivity {
         TestT = (TextView) findViewById(R.id.textView2);
         button = (Button) findViewById(R.id.speak);
 
+        // 이전 액티비티에서 넘겨준 값들 다 받기
         Intent intent = getIntent();
         name = intent.getExtras().getString("name");
         confidence = intent.getExtras().getString("confidence");
+        lat = intent.getExtras().getDouble("latitude");
+        lon = intent.getExtras().getDouble("longitude");
 
         NameT.setText(name);
 
         landmark_info landmark = new landmark_info().get(name.toLowerCase());
         String test = landmark.info;
         TestT.setText(test);
-
-
 
         tts = new TextToSpeech(this, new TextToSpeech.OnInitListener() {
             @Override

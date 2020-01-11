@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -34,6 +35,8 @@ public class landmark_candidate_adapter extends RecyclerView.Adapter<landmark_ca
         MapView map;
         GoogleMap landmark_map;
         MarkerOptions marker;
+        double lat, lon;
+        Button GoButton;
 
 
         ViewHolder(final View itemView) {
@@ -42,6 +45,10 @@ public class landmark_candidate_adapter extends RecyclerView.Adapter<landmark_ca
             // 뷰 객체에 대한 참조. (hold strong reference)
             landmark_name = itemView.findViewById(R.id.landmark_candidate_item) ;
             landmark_confidence = itemView.findViewById(R.id.landmark_candidate_confidence) ;
+
+            // 세부정보 GO 버튼
+            GoButton = itemView.findViewById(R.id.go);
+
             map = (MapView) itemView.findViewById(R.id.landmark_candidate_map);
             marker = new MarkerOptions();
 
@@ -52,19 +59,23 @@ public class landmark_candidate_adapter extends RecyclerView.Adapter<landmark_ca
                 map.getMapAsync(this);
             }
 
-            itemView.setOnClickListener(new View.OnClickListener() {
+            GoButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+
                     Context context = v.getContext();
+
+                    // SecondActivity 로 넘길 값들 인텐트에 넣어줌
                     Intent intent = new Intent(context, SecondActivity.class);
                     intent.putExtra("name", landmark_name.getText().toString());
                     intent.putExtra("confidence", landmark_confidence.getText().toString());
+                    intent.putExtra("latitude", lat);
+                    intent.putExtra("longitude", lon);
 
                     context.startActivity(intent);
+
                 }
-
             });
-
 
         }
 
@@ -75,8 +86,9 @@ public class landmark_candidate_adapter extends RecyclerView.Adapter<landmark_ca
 //            landmark_map.addMarker(new MarkerOptions().position(
 
             List<FirebaseVisionLatLng> location = mData.get(getAdapterPosition()).getLocations();
-            double lat = location.get(0).getLatitude();
-            double lon = location.get(0).getLongitude();
+            lat = location.get(0).getLatitude();
+            lon = location.get(0).getLongitude();
+
 
             marker = new MarkerOptions();
             marker.position(new LatLng(lat, lon));
@@ -114,12 +126,7 @@ public class landmark_candidate_adapter extends RecyclerView.Adapter<landmark_ca
         String name = mData.get(position).getLandmark() ;
         float confidence = mData.get(position).getConfidence() ;
         holder.landmark_name.setText(name) ;
-        holder.landmark_confidence.setText(String.format("%.2f",confidence*100)+"%") ;
-
-        //여기서 위도경도 받아서 마커 찍어주기(GoogleMap thisMap = holder.landmark_map;)
-        List<FirebaseVisionLatLng> location = mData.get(position).getLocations();
-        double lat = location.get(0).getLatitude();
-        double lon = location.get(0).getLongitude();
+        holder.landmark_confidence.setText("  ("+String.format("%.2f",confidence*100)+"%)") ;
 
 //        System.out.println("lat:" + lat);
 //        System.out.println("lon:" + lon);
