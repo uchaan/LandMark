@@ -156,6 +156,7 @@ public class MainActivity extends AppCompatActivity {
         } else if (resultCode==RESULT_OK && requestCode == UCrop.REQUEST_CROP) {
             final Uri resultUri = UCrop.getOutput(data);
             imageView.setImageURI(resultUri);
+            button.setText("Another Image");
 
             imageFromPath(this, resultUri);
 

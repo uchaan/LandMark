@@ -1,13 +1,13 @@
 package com.example.landmark;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -24,7 +24,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 
-
 import noman.googleplaces.NRPlaces;
 import noman.googleplaces.Place;
 import noman.googleplaces.PlaceType;
@@ -37,10 +36,6 @@ public class SecondActivity extends AppCompatActivity implements PlacesListener,
 
     String name, confidence;
     double lat, lon;
-
-
-
-    Button button_show;
 
     Button button_show;
     TextView NameT, InfoT, WebT, TicketT;
