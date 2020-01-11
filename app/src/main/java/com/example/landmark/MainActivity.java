@@ -64,6 +64,10 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // 앱 시작 전 권한 요청
+        permission permission_check = new permission();
+        permission_check.checkPermissions(MainActivity.this);
+
         imageView = (ImageView)findViewById(R.id.image);
 
         button = (Button)findViewById(R.id.button);
@@ -81,7 +85,7 @@ public class MainActivity extends AppCompatActivity {
         // 리사이클러뷰에 LinearLayoutManager 객체 지정.
         recyclerView = findViewById(R.id.landmark_candidate_recyclerview) ;
         recyclerView.setLayoutManager(new LinearLayoutManager
-                (getApplicationContext(), LinearLayoutManager.HORIZONTAL, false));
+                (getApplicationContext(), LinearLayoutManager.VERTICAL, false));
 
         init = new ArrayList<>();
         landmark_candidate_adapter adapter =
@@ -162,7 +166,7 @@ public class MainActivity extends AppCompatActivity {
                         public void onSuccess(List<FirebaseVisionCloudLandmark> firebaseVisionCloudLandmarks) {
                             // Task completed successfully
                             // ...
-                                                                // 받아온 결과가 처음부터 NULL(랜드마크가 아님)
+                                // 받아온 결과가 처음부터 NULL(랜드마크가 아님)
                                 if(firebaseVisionCloudLandmarks.isEmpty()){
                                     Toast.makeText(getApplicationContext(),
                                             "다른 사진으로 재도전!", Toast.LENGTH_LONG).show();
@@ -185,6 +189,10 @@ public class MainActivity extends AppCompatActivity {
                                     // top3 (또는 그 이하) RecyclerView 보여주기
                                     else{
                                         int min_item = Math.min(3, updated_result.size());
+                                        TextView text_count = findViewById(R.id.landmark_count);
+                                        text_count.setText("총 "+min_item+"개를 찾았어요!");
+                                        text_count.setVisibility(View.VISIBLE);
+
                                         landmark_candidate_adapter adapter =
                                                 new landmark_candidate_adapter(updated_result.subList(0,min_item));
                                         recyclerView.setAdapter(adapter) ;
