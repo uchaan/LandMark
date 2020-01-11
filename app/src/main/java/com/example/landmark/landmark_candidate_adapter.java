@@ -128,20 +128,6 @@ public class landmark_candidate_adapter extends RecyclerView.Adapter<landmark_ca
         holder.landmark_name.setText(name) ;
         holder.landmark_confidence.setText("  ("+String.format("%.2f",confidence*100)+"%)") ;
 
-//        System.out.println("lat:" + lat);
-//        System.out.println("lon:" + lon);
-
-//        marker = new MarkerOptions();
-//        marker.position(new LatLng(lat, lon));
-//        marker.icon(BitmapDescriptorFactory.fromResource(R.drawable.location_pin));
-//        marker.title(name);
-//        holder.landmark_map.addMarker(marker);
-
-
-//        mGoogleMap2.moveCamera(CameraUpdateFactory.newLatLngZoom(
-//                new LatLng(latitude, longitude), 10));
-
-
 
 
     }
