@@ -38,10 +38,12 @@ public class SecondActivity extends AppCompatActivity implements PlacesListener,
     String name, confidence;
     double lat, lon;
 
-    TextView NameT;
+
+
     Button button_show;
 
-    TextView InfoT, WebT, TicketT;
+    Button button_show;
+    TextView NameT, InfoT, WebT, TicketT;
     Button SpeakButton, OpenInfoButton;
 
     private TextToSpeech tts;
@@ -49,8 +51,6 @@ public class SecondActivity extends AppCompatActivity implements PlacesListener,
     List<Marker> previous_marker = null;
     MapView map;
     GoogleMap restaurant_map;
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
