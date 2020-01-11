@@ -24,8 +24,8 @@ public class SecondActivity extends AppCompatActivity {
 
     String name, confidence;
     double lat, lon;
-    TextView NameT, TestT;
-    Button button;
+    TextView NameT, InfoT, WebT, TicketT;
+    Button SpeakButton, OpenInfoButton;
     private TextToSpeech tts;
 
 
@@ -35,9 +35,13 @@ public class SecondActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_second);
 
-        NameT = (TextView) findViewById(R.id.textView1);
-        TestT = (TextView) findViewById(R.id.textView2);
-        button = (Button) findViewById(R.id.speak);
+        NameT = (TextView) findViewById(R.id.name);
+        InfoT = (TextView) findViewById(R.id.info);
+        WebT = (TextView) findViewById(R.id.website);
+        TicketT = (TextView) findViewById(R.id.ticket);
+
+        SpeakButton = (Button) findViewById(R.id.speak);
+        OpenInfoButton = (Button) findViewById(R.id.openInfo);
 
         // 이전 액티비티에서 넘겨준 값들 다 받기
         Intent intent = getIntent();
@@ -48,10 +52,28 @@ public class SecondActivity extends AppCompatActivity {
 
         NameT.setText(name);
 
+        // 가져온 랜드마크 이름으로 랜드마크 설명 정보 가져오기 .
         landmark_info landmark = new landmark_info().get(name.toLowerCase());
-        String test = landmark.info;
-        TestT.setText(test);
+        InfoT.setText(landmark.info);
+        WebT.setText(landmark.website);
+        TicketT.setText(landmark.ticket);
 
+        // 설명 보기 버튼 설정.
+        OpenInfoButton.setOnClickListener(new View.OnClickListener() {
+            int count = 0;
+            @Override
+            public void onClick(View v) {
+                count++;
+                if (count%2==1) {
+                    findViewById(R.id.information).setVisibility(View.VISIBLE);
+                } else {
+                    findViewById(R.id.information).setVisibility(View.GONE);
+                }
+
+            }
+        });
+
+        // 읽어주기  객체 생성.
         tts = new TextToSpeech(this, new TextToSpeech.OnInitListener() {
             @Override
             public void onInit(int status) {
@@ -60,14 +82,16 @@ public class SecondActivity extends AppCompatActivity {
                 }
             }
         });
-        button.setOnClickListener(new View.OnClickListener() {
+
+        // 읽어주기 시작 버튼 설정.
+        SpeakButton.setOnClickListener(new View.OnClickListener() {
             int Count = 0;
             @Override
             public void onClick(View v) {
                 Count++;
                 if (Count%2==1){
                     tts.setSpeechRate(1f);
-                    tts.speak(TestT.getText().toString(), TextToSpeech.QUEUE_FLUSH, null);
+                    tts.speak(InfoT.getText().toString(), TextToSpeech.QUEUE_FLUSH, null);
                 } else {
                     tts.stop();
                 }
