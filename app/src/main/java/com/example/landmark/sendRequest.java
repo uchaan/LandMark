@@ -39,7 +39,7 @@ public class sendRequest extends AsyncTask<RequestItem, Void, ArrayList<RequestI
         String API_KEY = "AIzaSyCbczuPt2sl8N5DOQqCKPvynvN9n55rGak";
 
         //Boolean resultList = false;
-        RequestItem[] resultList;
+        ArrayList<RequestItem> resultList = new ArrayList<>();
 
         HttpURLConnection conn = null;
         StringBuilder jsonResults = new StringBuilder();
@@ -99,8 +99,9 @@ public class sendRequest extends AsyncTask<RequestItem, Void, ArrayList<RequestI
                 double lng = location.getDouble("lng");
 
                 RequestItem temp = new RequestItem().setItem(name, id, lat, lng);
+                resultList.add(temp);
 
-                System.out.println(predsJsonArray.getJSONObject(i).getString("name"));
+                System.out.println(resultList.get(i).name);
             }
         } catch (JSONException e) {
             Log.e(LOG_TAG, "Error processing JSON results", e);

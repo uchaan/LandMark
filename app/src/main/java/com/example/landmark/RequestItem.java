@@ -25,10 +25,12 @@ public class RequestItem {
 
     public RequestItem setItem(String name, String id, double lat, double lng){
         RequestItem result = new RequestItem();
-        this.name = name;
-        this.id = id;
-        this.lat = lat;
-        this.lng = lng;
+        result.name = name;
+        result.id = id;
+        result.lat = lat;
+        result.lng = lng;
+
+        return result;
     }
 
 }
