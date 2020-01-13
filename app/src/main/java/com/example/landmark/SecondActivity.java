@@ -242,6 +242,8 @@ public class SecondActivity extends AppCompatActivity implements PlacesListener,
                 break;
             case "tower bridge" :
                 break;
+            case "victoria and albert museum" :
+                break;
         }
         restaurant_map.addMarker(show_marker);
     }
