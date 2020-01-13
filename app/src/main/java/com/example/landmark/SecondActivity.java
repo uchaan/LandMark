@@ -3,7 +3,6 @@ package com.example.landmark;
 import android.content.Intent;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -21,23 +20,13 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.ExecutionException;
 
-import noman.googleplaces.NRPlaces;
+
 import noman.googleplaces.Place;
 import noman.googleplaces.PlaceType;
 import noman.googleplaces.PlacesException;
@@ -45,7 +34,7 @@ import noman.googleplaces.PlacesListener;
 
 import static android.speech.tts.TextToSpeech.ERROR;
 
-public class SecondActivity extends AppCompatActivity implements PlacesListener, OnMapReadyCallback {
+public class SecondActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     String name, confidence;
     double lat, lon;
@@ -85,6 +74,7 @@ public class SecondActivity extends AppCompatActivity implements PlacesListener,
 
         previous_marker = new ArrayList<Marker>();
 
+        // 서버에 request 보내서 지도에 레스토랑 찍는 버튼
         button_show = (Button)findViewById(R.id.show_restaurant);
         button_show.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -93,22 +83,12 @@ public class SecondActivity extends AppCompatActivity implements PlacesListener,
             }
         });
 
-        button_request = (Button)findViewById(R.id.request);
-        button_request.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                RequestItem item = new RequestItem("restaurant", lat, lon, 500);
-                sendRequest task = new sendRequest();
-                try {
-                    boolean success = task.execute(item).get();
-                    Toast.makeText(v.getContext(), "Request!! : "+success, Toast.LENGTH_SHORT).show();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                } catch (ExecutionException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
+//        button_request = (Button)findViewById(R.id.request);
+//        button_request.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//            }
+//        });
       
         // 이전 액티비티에서 넘겨준 값들 다 받기
         Intent intent = getIntent();
@@ -179,59 +159,9 @@ public class SecondActivity extends AppCompatActivity implements PlacesListener,
 
 
     @Override
-    public void onPlacesFailure(PlacesException e) {
-
-    }
-
-    @Override
-    public void onPlacesStart() {
-
-    }
-
-    @Override
-    public void onPlacesSuccess(final List<Place> places) {
-
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                for (noman.googleplaces.Place place : places) {
-
-                    LatLng latLng
-                            = new LatLng(place.getLatitude()
-                            , place.getLongitude());
-
-                    MarkerOptions markerOptions = new MarkerOptions();
-                    markerOptions.position(latLng);
-                    markerOptions.title(place.getName());
-                    Marker item = restaurant_map.addMarker(markerOptions);
-                    previous_marker.add(item);
-
-                }
-
-                //중복 마커 제거
-                HashSet<Marker> hashSet = new HashSet<Marker>();
-                hashSet.addAll(previous_marker);
-                previous_marker.clear();
-                previous_marker.addAll(hashSet);
-
-            }
-        });
-    }
-
-    @Override
-    public void onPlacesFinished() {
-
-    }
-
-    @Override
     public void onMapReady(GoogleMap googleMap) {
         MapsInitializer.initialize(getApplicationContext());
         restaurant_map = googleMap;
-
-//        MarkerOptions big_ben_marker = new MarkerOptions();
-//        big_ben_marker.position(new LatLng(lat, lon));
-//        big_ben_marker.icon(BitmapDescriptorFactory.fromResource(R.drawable.big_ben_pin));
-//        restaurant_map.addMarker(big_ben_marker);
 
         show_landmark(name);
 
@@ -239,6 +169,9 @@ public class SecondActivity extends AppCompatActivity implements PlacesListener,
         restaurant_map.moveCamera(CameraUpdateFactory.newLatLngZoom(curPoint, 14));
     }
 
+    // Show Restaurant 버튼 눌렀을 때 호출됨
+    // 서버에서 이름, 아이디, 위도, 경도 받아옴
+    // 위도 경도에 맞게 지도에 마커 찍어줌
     public void showPlaceInformation(LatLng location, String type)
     {
         restaurant_map.clear();//지도 클리어
@@ -246,15 +179,24 @@ public class SecondActivity extends AppCompatActivity implements PlacesListener,
         if (previous_marker != null)
             previous_marker.clear();//지역정보 마커 클리어
 
-        new NRPlaces.Builder()
-                .listener(SecondActivity.this)
-                .key("AIzaSyCbczuPt2sl8N5DOQqCKPvynvN9n55rGak")
-                .latlng(location.latitude, location.longitude)//현재 위치
-                .radius(300) //500 미터 내에서 검색
-                .type(type) //음식점
-                .build()
-                .execute();
+        RequestItem item = new RequestItem("restaurant", lat, lon, 500);
+        sendRequest task = new sendRequest();
+        try {
+            ArrayList<RequestItem> result = task.execute(item).get();
 
+            for (int i = 0; i < result.size(); i++){
+                MarkerOptions temp = new MarkerOptions();
+                temp.position(new LatLng(result.get(i).lat, result.get(i).lng));
+                temp.title(result.get(i).name);
+                temp.icon(BitmapDescriptorFactory.fromResource(R.drawable.location_pin));
+                restaurant_map.addMarker(temp);
+            }
+            Toast.makeText(getApplicationContext(), "Show place information!! : "+result.get(0).name, Toast.LENGTH_SHORT).show();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
         show_landmark(name);
     }
 
@@ -276,7 +218,5 @@ public class SecondActivity extends AppCompatActivity implements PlacesListener,
         }
         restaurant_map.addMarker(show_marker);
     }
-
-
-
+    
 }
