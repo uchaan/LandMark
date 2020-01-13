@@ -50,13 +50,9 @@ public class SecondActivity extends AppCompatActivity implements PlacesListener,
     String name, confidence;
     double lat, lon;
 
-
-  
     Button button_show, button_request;
 
-    TextView InfoT, WebT, TicketT;
-    Button button_show;
-    TextView NameT, InfoT, WebT, TicketT;
+    TextView InfoT, WebT, TicketT, NameT;
     Button SpeakButton, OpenInfoButton;
 
     private TextToSpeech tts;
@@ -166,7 +162,6 @@ public class SecondActivity extends AppCompatActivity implements PlacesListener,
                 } else {
                     tts.stop();
                 }
-
             }
         });
     }
@@ -255,7 +250,7 @@ public class SecondActivity extends AppCompatActivity implements PlacesListener,
                 .listener(SecondActivity.this)
                 .key("AIzaSyCbczuPt2sl8N5DOQqCKPvynvN9n55rGak")
                 .latlng(location.latitude, location.longitude)//현재 위치
-                .radius(500) //500 미터 내에서 검색
+                .radius(300) //500 미터 내에서 검색
                 .type(type) //음식점
                 .build()
                 .execute();
