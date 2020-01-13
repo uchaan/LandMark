@@ -1,6 +1,7 @@
 package com.example.landmark;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
 import android.view.View;
@@ -38,12 +39,11 @@ public class SecondActivity extends AppCompatActivity implements OnMapReadyCallb
 
     private Marker myMarker;
 
-
-
     String name, confidence;
+    String OpenChat;
     double lat, lon;
 
-    Button button_show, button_request;
+    Button button_show, button_chat;
 
     TextView InfoT, WebT, TicketT, NameT;
     Button SpeakButton, OpenInfoButton;
@@ -87,33 +87,7 @@ public class SecondActivity extends AppCompatActivity implements OnMapReadyCallb
             }
         });
 
-        button_request = (Button)findViewById(R.id.request);
-        button_request.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
 
-                RequestItem item = new RequestItem("restaurant", lat, lon, 500);
-                sendRequest task = new sendRequest();
-                try {
-                    ArrayList<RequestItem> result = task.execute(item).get();
-
-                    for (int i = 0; i < result.size(); i++){
-                        MarkerOptions temp = new MarkerOptions();
-                        temp.position(new LatLng(result.get(i).lat, result.get(i).lng));
-                        temp.title(result.get(i).name);
-                        temp.icon(BitmapDescriptorFactory.fromResource(R.drawable.location_pin));
-                        restaurant_map.addMarker(temp);
-                    }
-                    Toast.makeText(getApplicationContext(), "Show place information!! : "+result.get(0).name, Toast.LENGTH_SHORT).show();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                } catch (ExecutionException e) {
-                    e.printStackTrace();
-                }
-
-            }
-        });
-      
         // 이전 액티비티에서 넘겨준 값들 다 받기
         Intent intent = getIntent();
         name = intent.getExtras().getString("name");
@@ -128,6 +102,16 @@ public class SecondActivity extends AppCompatActivity implements OnMapReadyCallb
         InfoT.setText(landmark.info);
         WebT.setText(landmark.website);
         TicketT.setText(landmark.ticket);
+        OpenChat = landmark.OpenChatting;
+
+        button_chat = (Button)findViewById(R.id.chat);
+        button_chat.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(OpenChat));
+                startActivity(intent);
+            }
+        });
 
         // 설명 보기 버튼 설정.
         OpenInfoButton.setOnClickListener(new View.OnClickListener() {
@@ -207,6 +191,7 @@ public class SecondActivity extends AppCompatActivity implements OnMapReadyCallb
                         RequestItem item = new RequestItem().requestDetailsItem(marker.getSnippet());
                         try {
                             RequestItem result = task.execute(item).get();
+
                             marker.setSnippet(result.address+String.format("%2f", result.rating));
 
                         } catch (InterruptedException e) {
@@ -218,27 +203,7 @@ public class SecondActivity extends AppCompatActivity implements OnMapReadyCallb
                 return false;
             }
         });
-
-        //How to use =======================================================================
-//        sendRequest task = new sendRequest();
-////        try {
-////                ArrayList<RequestItem> result = task.execute(item).get();
-////
-////        for (int i = 0; i < result.size(); i++){
-////        MarkerOptions temp = new MarkerOptions();
-////        temp.position(new LatLng(result.get(i).lat, result.get(i).lng));
-////        temp.title(result.get(i).name);
-////        temp.icon(BitmapDescriptorFactory.fromResource(R.drawable.location_pin));
-////        restaurant_map.addMarker(temp);
-////        }
-////        } catch (InterruptedException e) {
-////        e.printStackTrace();
-////        } catch (ExecutionException e) {
-////        e.printStackTrace();
-////        }
-//=====================================================================================
-
-
+      
         if (previous_marker != null)
             previous_marker.clear();//지역정보 마커 클리어
 
@@ -254,13 +219,7 @@ public class SecondActivity extends AppCompatActivity implements OnMapReadyCallb
                             .icon(BitmapDescriptorFactory.fromResource(R.drawable.location_pin))
                             .snippet(result.get(i).id));
 
-                myMarker.setTag(new LatLng(result.get(i).lat, result.get(i).lng));
-
-//                MarkerOptions temp = new MarkerOptions();
-//                temp.position(new LatLng(result.get(i).lat, result.get(i).lng));
-//                temp.title(result.get(i).name);
-//                temp.icon(BitmapDescriptorFactory.fromResource(R.drawable.location_pin));
-//                restaurant_map.addMarker(temp);
+                myMarker.setTag(result.get(i).id);
             }
             Toast.makeText(getApplicationContext(), "Show place information!! : "+result.get(0).name, Toast.LENGTH_SHORT).show();
         } catch (InterruptedException e) {
@@ -271,8 +230,6 @@ public class SecondActivity extends AppCompatActivity implements OnMapReadyCallb
 
         show_landmark(name);
     }
-
-
 
     // String Parameter 에 따라 다른 아이콘 표시
     public void show_landmark(String landmark){
