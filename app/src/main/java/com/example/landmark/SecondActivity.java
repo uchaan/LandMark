@@ -87,12 +87,32 @@ public class SecondActivity extends AppCompatActivity implements OnMapReadyCallb
             }
         });
 
-//        button_request = (Button)findViewById(R.id.request);
-//        button_request.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//            }
-//        });
+        button_request = (Button)findViewById(R.id.request);
+        button_request.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                RequestItem item = new RequestItem("restaurant", lat, lon, 500);
+                sendRequest task = new sendRequest();
+                try {
+                    ArrayList<RequestItem> result = task.execute(item).get();
+
+                    for (int i = 0; i < result.size(); i++){
+                        MarkerOptions temp = new MarkerOptions();
+                        temp.position(new LatLng(result.get(i).lat, result.get(i).lng));
+                        temp.title(result.get(i).name);
+                        temp.icon(BitmapDescriptorFactory.fromResource(R.drawable.location_pin));
+                        restaurant_map.addMarker(temp);
+                    }
+                    Toast.makeText(getApplicationContext(), "Show place information!! : "+result.get(0).name, Toast.LENGTH_SHORT).show();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        });
       
         // 이전 액티비티에서 넘겨준 값들 다 받기
         Intent intent = getIntent();
@@ -241,5 +261,5 @@ public class SecondActivity extends AppCompatActivity implements OnMapReadyCallb
         }
         restaurant_map.addMarker(show_marker);
     }
-    
+
 }
