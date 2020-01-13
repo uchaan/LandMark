@@ -44,6 +44,7 @@ public class sendRequest extends AsyncTask<RequestItem, Void, ArrayList<RequestI
         HttpURLConnection conn = null;
         StringBuilder jsonResults = new StringBuilder();
         try {
+            // requestItem 정보 이용해서 요청할 url 생성 .
             StringBuilder sb = new StringBuilder(PLACES_API_BASE);
             sb.append(TYPE_SEARCH);
             sb.append(OUT_JSON);

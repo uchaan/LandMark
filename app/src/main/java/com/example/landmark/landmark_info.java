@@ -40,6 +40,14 @@ public class landmark_info {
 
     }
 
+    public void VICTORIA_ALBERT_MUSEUM() {
+        this.name = "VICTORIA AND ALBERT MUSEUM";
+        this.info = "빅토리아 앨버트 박물관은 영국 런던의 사우스켄싱턴에 있는 미술관이다. 영국 왕립박물관 중의 하나로, 중세부터 근대에 걸친 유럽 미술을 중심으로 동양미술 작품에 이르기까지 광범위하게 소장하고 있다. 특히 장식미술 공예분야에서는 세계적 규모와 내용을 자랑한다. 1852년 말버러 하우스에 개설된 산업박물관을 모체로 하여 발족하였다. 그 후 종래의 자연과학 부문을 분리하여 수집품 확대에 주력하였다. 1899년 A. 웨브의 설계로 신관을 건립할 때 빅토리아 여왕은 산업과 미술의 결합을 시도했던 망부 앨버트 공의 유지를 구체화하기 위하여 빅토리아 앨버트 박물관으로 이름을 바꾸어 1909년에 개관하였다. 이후 교육 계몽기관으로도 활발히 활동하고 있으며, 부속시설로는 대규모 미술관계 도서실과 슬라이드 센터가 있다. \n";
+        this.website = "https://www.vam.ac.uk";
+        this.ticket = "빅토리아 앨버트 박물관의 입장료는 무료입니다.";
+
+    }
+
     public landmark_info get(String landmark){
         landmark_info result = new landmark_info();
 
@@ -54,6 +62,10 @@ public class landmark_info {
 
             case "tower bridge":
                 result.TOWER_BRIDGE();
+                break;
+
+            case "victoria and albert museum":
+                result.VICTORIA_ALBERT_MUSEUM();
                 break;
         }
         return result;

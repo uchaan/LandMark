@@ -37,12 +37,16 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:linksClickable="true"
+            android:autoLink="web"
             android:id="@+id/website"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:linksClickable="true"
+            android:autoLink="web"
             android:id="@+id/ticket"/>
 
     </LinearLayout>

@@ -1,7 +1,5 @@
 package com.example.landmark;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
@@ -9,6 +7,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -39,10 +39,9 @@ public class SecondActivity extends AppCompatActivity implements OnMapReadyCallb
     String name, confidence;
     double lat, lon;
 
-    TextView NameT;
     Button button_show, button_request;
 
-    TextView InfoT, WebT, TicketT;
+    TextView InfoT, WebT, TicketT, NameT;
     Button SpeakButton, OpenInfoButton;
 
     private TextToSpeech tts;
@@ -50,8 +49,6 @@ public class SecondActivity extends AppCompatActivity implements OnMapReadyCallb
     List<Marker> previous_marker = null;
     MapView map;
     GoogleMap restaurant_map;
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -145,7 +142,6 @@ public class SecondActivity extends AppCompatActivity implements OnMapReadyCallb
                 } else {
                     tts.stop();
                 }
-
             }
         });
     }
@@ -183,7 +179,6 @@ public class SecondActivity extends AppCompatActivity implements OnMapReadyCallb
         if (previous_marker != null)
             previous_marker.clear();//지역정보 마커 클리어
 
-
         RequestItem item = new RequestItem("restaurant", lat, lon, 500);
         sendRequest task = new sendRequest();
         try {
@@ -202,8 +197,6 @@ public class SecondActivity extends AppCompatActivity implements OnMapReadyCallb
         } catch (ExecutionException e) {
             e.printStackTrace();
         }
-
-
         show_landmark(name);
     }
 
@@ -219,6 +212,8 @@ public class SecondActivity extends AppCompatActivity implements OnMapReadyCallb
             case "london eye":
                 break;
             case "tower bridge" :
+                break;
+            case "victoria and albert museum" :
                 break;
         }
         restaurant_map.addMarker(show_marker);
