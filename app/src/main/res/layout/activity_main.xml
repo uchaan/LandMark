@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="#ffffff">
+    android:background="@color/London">
 
     <ImageView
         android:id="@+id/image"
@@ -19,12 +19,12 @@
         android:orientation="vertical">
 
         <Button
-            android:text="Gallery Open"
-            android:textSize="18dp"
             android:id="@+id/button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"/>
+            android:layout_gravity="center_horizontal"
+            android:text="사진 가져오기 "
+            android:textSize="18dp" />
 
         <TextView
             android:layout_width="wrap_content"

@@ -68,7 +68,6 @@ public class landmark_candidate_adapter extends RecyclerView.Adapter<landmark_ca
                     // SecondActivity 로 넘길 값들 인텐트에 넣어줌
                     Intent intent = new Intent(context, SecondActivity.class);
                     intent.putExtra("name", landmark_name.getText().toString());
-                    intent.putExtra("confidence", landmark_confidence.getText().toString());
                     intent.putExtra("latitude", lat);
                     intent.putExtra("longitude", lon);
 
