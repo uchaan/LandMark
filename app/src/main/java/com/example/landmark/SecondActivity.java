@@ -207,8 +207,7 @@ public class SecondActivity extends AppCompatActivity implements OnMapReadyCallb
                         RequestItem item = new RequestItem().requestDetailsItem(marker.getSnippet());
                         try {
                             RequestItem result = task.execute(item).get();
-
-                            Toast.makeText(getApplicationContext(), String.format("%2f", result.rating), Toast.LENGTH_LONG);
+                            marker.setSnippet(result.address+String.format("%2f", result.rating));
 
                         } catch (InterruptedException e) {
                             e.printStackTrace();

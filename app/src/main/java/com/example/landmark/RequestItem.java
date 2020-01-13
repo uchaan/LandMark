@@ -13,7 +13,6 @@ public class RequestItem {
     public double lng;
     public int radius;
     public String id;
-    public String phone;
     public double rating;
     public String address;
 
@@ -46,9 +45,8 @@ public class RequestItem {
         return result;
     }
 
-    public RequestItem setDetailsItem(String phone, double rating, String address){
+    public RequestItem setDetailsItem(double rating, String address){
         RequestItem result = new RequestItem();
-        result.phone = phone;
         result.rating = rating;
         result.address = address;
 
