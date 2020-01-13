@@ -1,6 +1,5 @@
 package com.example.landmark;
 
-import android.app.DownloadManager;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -14,6 +13,26 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+
+
+//How to use =======================================================================
+//        sendRequest task = new sendRequest();
+////        try {
+////                ArrayList<RequestItem> result = task.execute(item).get();
+////
+////        for (int i = 0; i < result.size(); i++){
+////        MarkerOptions temp = new MarkerOptions();
+////        temp.position(new LatLng(result.get(i).lat, result.get(i).lng));
+////        temp.title(result.get(i).name);
+////        temp.icon(BitmapDescriptorFactory.fromResource(R.drawable.location_pin));
+////        restaurant_map.addMarker(temp);
+////        }
+////        } catch (InterruptedException e) {
+////        e.printStackTrace();
+////        } catch (ExecutionException e) {
+////        e.printStackTrace();
+////        }
+//=====================================================================================
 
 public class sendRequest extends AsyncTask<RequestItem, Void, ArrayList<RequestItem>>{
     static String type;
@@ -81,12 +100,7 @@ public class sendRequest extends AsyncTask<RequestItem, Void, ArrayList<RequestI
             JSONArray predsJsonArray = jsonObj.getJSONArray("results");
 
             // Extract the Place descriptions from the results
-            //resultList = true;
             for (int i = 0; i < predsJsonArray.length(); i++) {
-//                com.google.android.gms.location.places.Place place = new com.google.android.gms.location.places.Place();
-//                place.reference = predsJsonArray.getJSONObject(i).getString("reference");
-//                place.name = predsJsonArray.getJSONObject(i).getString("name");
-//                resultList.add(place);
 
                 String name = predsJsonArray.getJSONObject(i).getString("name");
                 String id = predsJsonArray.getJSONObject(i).getString("id");
