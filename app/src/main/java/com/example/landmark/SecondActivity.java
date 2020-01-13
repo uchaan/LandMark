@@ -203,11 +203,42 @@ public class SecondActivity extends AppCompatActivity implements OnMapReadyCallb
         restaurant_map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
-                
-                Toast.makeText(getApplicationContext(), marker.getId(), Toast.LENGTH_LONG).show();
+                        sendDetailsRequest task = new sendDetailsRequest();
+                        RequestItem item = new RequestItem().requestDetailsItem(marker.getSnippet());
+                        try {
+                            RequestItem result = task.execute(item).get();
+
+                            Toast.makeText(getApplicationContext(), String.format("%2f", result.rating), Toast.LENGTH_LONG);
+
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        } catch (ExecutionException e) {
+                            e.printStackTrace();
+                        }
+
                 return false;
             }
         });
+
+        //How to use =======================================================================
+//        sendRequest task = new sendRequest();
+////        try {
+////                ArrayList<RequestItem> result = task.execute(item).get();
+////
+////        for (int i = 0; i < result.size(); i++){
+////        MarkerOptions temp = new MarkerOptions();
+////        temp.position(new LatLng(result.get(i).lat, result.get(i).lng));
+////        temp.title(result.get(i).name);
+////        temp.icon(BitmapDescriptorFactory.fromResource(R.drawable.location_pin));
+////        restaurant_map.addMarker(temp);
+////        }
+////        } catch (InterruptedException e) {
+////        e.printStackTrace();
+////        } catch (ExecutionException e) {
+////        e.printStackTrace();
+////        }
+//=====================================================================================
+
 
         if (previous_marker != null)
             previous_marker.clear();//지역정보 마커 클리어
@@ -221,7 +252,8 @@ public class SecondActivity extends AppCompatActivity implements OnMapReadyCallb
                 myMarker = restaurant_map.addMarker(new MarkerOptions()
                             .position(new LatLng(result.get(i).lat, result.get(i).lng))
                             .title(result.get(i).name)
-                            .snippet("Marker Click test"));
+                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.location_pin))
+                            .snippet(result.get(i).id));
 
                 myMarker.setTag(new LatLng(result.get(i).lat, result.get(i).lng));
 

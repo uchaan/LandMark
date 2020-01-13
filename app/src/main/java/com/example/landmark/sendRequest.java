@@ -104,7 +104,7 @@ public class sendRequest extends AsyncTask<RequestItem, Void, ArrayList<RequestI
             for (int i = 0; i < predsJsonArray.length(); i++) {
 
                 String name = predsJsonArray.getJSONObject(i).getString("name");
-                String id = predsJsonArray.getJSONObject(i).getString("id");
+                String id = predsJsonArray.getJSONObject(i).getString("place_id");
 
                 String json_geometry = predsJsonArray.getJSONObject(i).getString("geometry");
                 JSONObject geometry = new JSONObject(json_geometry);
