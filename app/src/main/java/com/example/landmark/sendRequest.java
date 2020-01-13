@@ -13,8 +13,9 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 
-public class sendRequest extends AsyncTask<RequestItem, Void, Boolean>{
+public class sendRequest extends AsyncTask<RequestItem, Void, ArrayList<RequestItem>>{
     static String type;
     static double lat;
     static double lng;
@@ -23,7 +24,7 @@ public class sendRequest extends AsyncTask<RequestItem, Void, Boolean>{
     public sendRequest(){}
 
     @Override
-    protected Boolean doInBackground(RequestItem... requestItems) {
+    protected ArrayList<RequestItem> doInBackground(RequestItem... requestItems) {
 
         RequestItem item = requestItems[0];
         this.type = item.type;
@@ -37,7 +38,8 @@ public class sendRequest extends AsyncTask<RequestItem, Void, Boolean>{
         String OUT_JSON = "/json";
         String API_KEY = "AIzaSyCbczuPt2sl8N5DOQqCKPvynvN9n55rGak";
 
-        Boolean resultList = false;
+        //Boolean resultList = false;
+        RequestItem[] resultList;
 
         HttpURLConnection conn = null;
         StringBuilder jsonResults = new StringBuilder();
@@ -63,10 +65,10 @@ public class sendRequest extends AsyncTask<RequestItem, Void, Boolean>{
             }
         } catch (MalformedURLException e) {
             Log.e(LOG_TAG, "Error processing Places API URL", e);
-            return resultList;
+            //return resultList;
         } catch (IOException e) {
             Log.e(LOG_TAG, "Error connecting to Places API", e);
-            return resultList;
+            //return resultList;
         } finally {
             if (conn != null) {
                 conn.disconnect();
@@ -79,12 +81,24 @@ public class sendRequest extends AsyncTask<RequestItem, Void, Boolean>{
             JSONArray predsJsonArray = jsonObj.getJSONArray("results");
 
             // Extract the Place descriptions from the results
-            resultList = true;
+            //resultList = true;
             for (int i = 0; i < predsJsonArray.length(); i++) {
 //                com.google.android.gms.location.places.Place place = new com.google.android.gms.location.places.Place();
 //                place.reference = predsJsonArray.getJSONObject(i).getString("reference");
 //                place.name = predsJsonArray.getJSONObject(i).getString("name");
 //                resultList.add(place);
+
+                String name = predsJsonArray.getJSONObject(i).getString("name");
+                String id = predsJsonArray.getJSONObject(i).getString("id");
+
+                String json_geometry = predsJsonArray.getJSONObject(i).getString("geometry");
+                JSONObject geometry = new JSONObject(json_geometry);
+                String json_location = geometry.getString("location");
+                JSONObject location = new JSONObject(json_location);
+                double lat = location.getDouble("lat");
+                double lng = location.getDouble("lng");
+
+                RequestItem temp = new RequestItem().setItem(name, id, lat, lng);
 
                 System.out.println(predsJsonArray.getJSONObject(i).getString("name"));
             }
