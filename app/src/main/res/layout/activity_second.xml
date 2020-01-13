@@ -82,11 +82,10 @@
             ></Button>
 
         <Button
+            android:id="@+id/chat"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/request"
-            android:text="request"
-            ></Button>
+            android:text="Open Chat"></Button>
 
     </LinearLayout>
 
