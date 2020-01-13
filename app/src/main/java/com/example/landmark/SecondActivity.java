@@ -39,8 +39,6 @@ public class SecondActivity extends AppCompatActivity implements OnMapReadyCallb
 
     private Marker myMarker;
 
-
-
     String name, confidence;
     String OpenChat;
     double lat, lon;
@@ -194,7 +192,7 @@ public class SecondActivity extends AppCompatActivity implements OnMapReadyCallb
                         try {
                             RequestItem result = task.execute(item).get();
 
-                            Toast.makeText(getApplicationContext(), marker.getTag().toString() , Toast.LENGTH_LONG);
+                            marker.setSnippet(result.address+String.format("%2f", result.rating));
 
                         } catch (InterruptedException e) {
                             e.printStackTrace();
@@ -205,27 +203,7 @@ public class SecondActivity extends AppCompatActivity implements OnMapReadyCallb
                 return false;
             }
         });
-
-        //How to use =======================================================================
-//        sendRequest task = new sendRequest();
-////        try {
-////                ArrayList<RequestItem> result = task.execute(item).get();
-////
-////        for (int i = 0; i < result.size(); i++){
-////        MarkerOptions temp = new MarkerOptions();
-////        temp.position(new LatLng(result.get(i).lat, result.get(i).lng));
-////        temp.title(result.get(i).name);
-////        temp.icon(BitmapDescriptorFactory.fromResource(R.drawable.location_pin));
-////        restaurant_map.addMarker(temp);
-////        }
-////        } catch (InterruptedException e) {
-////        e.printStackTrace();
-////        } catch (ExecutionException e) {
-////        e.printStackTrace();
-////        }
-//=====================================================================================
-
-
+      
         if (previous_marker != null)
             previous_marker.clear();//지역정보 마커 클리어
 
@@ -242,12 +220,6 @@ public class SecondActivity extends AppCompatActivity implements OnMapReadyCallb
                             .snippet(result.get(i).id));
 
                 myMarker.setTag(result.get(i).id);
-
-//                MarkerOptions temp = new MarkerOptions();
-//                temp.position(new LatLng(result.get(i).lat, result.get(i).lng));
-//                temp.title(result.get(i).name);
-//                temp.icon(BitmapDescriptorFactory.fromResource(R.drawable.location_pin));
-//                restaurant_map.addMarker(temp);
             }
             Toast.makeText(getApplicationContext(), "Show place information!! : "+result.get(0).name, Toast.LENGTH_SHORT).show();
         } catch (InterruptedException e) {
@@ -258,8 +230,6 @@ public class SecondActivity extends AppCompatActivity implements OnMapReadyCallb
 
         show_landmark(name);
     }
-
-
 
     // String Parameter 에 따라 다른 아이콘 표시
     public void show_landmark(String landmark){

@@ -115,8 +115,6 @@ public class sendRequest extends AsyncTask<RequestItem, Void, ArrayList<RequestI
 
                 RequestItem temp = new RequestItem().setItem(name, id, lat, lng);
                 resultList.add(temp);
-
-                System.out.println(resultList.get(i).name);
             }
         } catch (JSONException e) {
             Log.e(LOG_TAG, "Error processing JSON results", e);
