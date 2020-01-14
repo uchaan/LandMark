@@ -69,7 +69,6 @@ public class sendRequest extends AsyncTask<RequestItem, Void, ArrayList<RequestI
             sb.append(OUT_JSON);
             sb.append("?sensor=false");
             sb.append("&key=" + API_KEY);
-//            sb.append("&keyword=" + URLEncoder.encode(keyword, "utf8"));
             sb.append("&location=" + String.valueOf(lat) + "," + String.valueOf(lng));
             sb.append("&radius=" + String.valueOf(radius));
             sb.append("&type=" + String.valueOf(type));
@@ -100,24 +99,36 @@ public class sendRequest extends AsyncTask<RequestItem, Void, ArrayList<RequestI
             JSONObject jsonObj = new JSONObject(jsonResults.toString());
             JSONArray predsJsonArray = jsonObj.getJSONArray("results");
 
-            // Extract the Place descriptions from the results
-            for (int i = 0; i < predsJsonArray.length(); i++) {
-
-                String name = predsJsonArray.getJSONObject(i).getString("name");
-                String id = predsJsonArray.getJSONObject(i).getString("place_id");
-
-                String json_geometry = predsJsonArray.getJSONObject(i).getString("geometry");
-                JSONObject geometry = new JSONObject(json_geometry);
-                String json_location = geometry.getString("location");
-                JSONObject location = new JSONObject(json_location);
-                double lat = location.getDouble("lat");
-                double lng = location.getDouble("lng");
-
-                RequestItem temp = new RequestItem().setItem(name, id, lat, lng);
+            if (predsJsonArray.length() == 0){
+                RequestItem temp = new RequestItem().setError();
                 resultList.add(temp);
             }
+
+            else{
+                // Extract the Place descriptions from the results
+                for (int i = 0; i < predsJsonArray.length(); i++) {
+
+                    String name = predsJsonArray.getJSONObject(i).getString("name");
+                    String id = predsJsonArray.getJSONObject(i).getString("place_id");
+
+                    String json_geometry = predsJsonArray.getJSONObject(i).getString("geometry");
+                    JSONObject geometry = new JSONObject(json_geometry);
+                    String json_location = geometry.getString("location");
+                    JSONObject location = new JSONObject(json_location);
+                    double lat = location.getDouble("lat");
+                    double lng = location.getDouble("lng");
+
+                    RequestItem temp = new RequestItem().setItem(name, id, lat, lng);
+                    resultList.add(temp);
+                }
+
+            }
+
+
         } catch (JSONException e) {
             Log.e(LOG_TAG, "Error processing JSON results", e);
+            RequestItem temp = new RequestItem().setError();
+            resultList.add(temp);
         }
 
         return resultList;
