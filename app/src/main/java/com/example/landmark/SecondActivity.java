@@ -109,7 +109,6 @@ public class SecondActivity extends AppCompatActivity implements OnMapReadyCallb
                     @Override
                     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                         request_type = parent.getItemAtPosition(position).toString();
-                        Toast.makeText(getApplicationContext(), request_type, Toast.LENGTH_SHORT).show();
                     }
 
                     @Override
@@ -128,7 +127,6 @@ public class SecondActivity extends AppCompatActivity implements OnMapReadyCallb
                         // 사용자가 범위 입력 완료
                         else {
                             search_bound = Integer.parseInt(text_search_bound.getText().toString());
-//                            Toast.makeText(getApplicationContext(), ""+search_bound, Toast.LENGTH_SHORT).show();
                             showPlaceInformation(request_type, search_bound);
                             dialog.dismiss();
                         }
@@ -151,8 +149,8 @@ public class SecondActivity extends AppCompatActivity implements OnMapReadyCallb
         // 가져온 랜드마크 이름으로 랜드마크 데이 가져오기 .
         landmark_info landmark = new landmark_info().get(name.toLowerCase());
         InfoT.setText(landmark.info);
-        WebT.setText(landmark.website);
-        TicketT.setText(landmark.ticket);
+        WebT.setText("공식 웹사이트 : " + landmark.website);
+        TicketT.setText("티켓 구매처 : "+landmark.ticket);
         OpenChat = landmark.OpenChatting;
 
         // 오픈채팅 버튼 링크 설정.
@@ -200,10 +198,8 @@ public class SecondActivity extends AppCompatActivity implements OnMapReadyCallb
                 if (Count%2==1){
                     tts.setSpeechRate(1f);
                     tts.speak(InfoT.getText().toString(), TextToSpeech.QUEUE_FLUSH, null);
-                    SpeakButton.setText("그만 읽기");
                 } else {
                     tts.stop();
-                    SpeakButton.setText("설명 읽기");
                 }
             }
         });
@@ -317,7 +313,7 @@ public class SecondActivity extends AppCompatActivity implements OnMapReadyCallb
                             .snippet(result.get(i).id));
               
                 myMarker.setTag(new LatLng(result.get(i).lat, result.get(i).lng));
-                Toast.makeText(getApplicationContext(), "위치 정보를 받아왔어요!! : "+result.get(0).name, Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "위치 정보를 받아왔어요!! ^^", Toast.LENGTH_SHORT).show();
 
             }
 
@@ -344,7 +340,7 @@ public class SecondActivity extends AppCompatActivity implements OnMapReadyCallb
             case "tower bridge" :
                 show_marker.icon(BitmapDescriptorFactory.fromResource(R.drawable.tower_bridge_pin));
                 break;
-            case "victoria and albert museum" :
+            case "va museum" :
                 show_marker.icon(BitmapDescriptorFactory.fromResource(R.drawable.museum_pin));
                 break;
             default:

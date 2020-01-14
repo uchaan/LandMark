@@ -124,7 +124,11 @@ public class landmark_candidate_adapter extends RecyclerView.Adapter<landmark_ca
     public void onBindViewHolder(landmark_candidate_adapter.ViewHolder holder, int position) {
         String name = mData.get(position).getLandmark() ;
         float confidence = mData.get(position).getConfidence() ;
-        holder.landmark_name.setText(name) ;
+        if (name.equals("Victoria and Albert Museum")){
+            holder.landmark_name.setText("VA Museum") ;
+        }
+        else
+            holder.landmark_name.setText(name) ;
         holder.landmark_confidence.setText("  ("+String.format("%.2f",confidence*100)+"%)") ;
 
 
