@@ -48,7 +48,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:background="@color/pink"
+            android:background="@drawable/round_button_pink"
             android:fontFamily="@font/baemin"
             android:text="사진 가져오기"
             android:textColor="@color/white"

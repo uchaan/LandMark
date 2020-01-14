@@ -1,20 +1,25 @@
 package com.example.landmark;
 
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.res.ResourcesCompat;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -63,6 +68,7 @@ public class SecondActivity extends AppCompatActivity implements OnMapReadyCallb
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
+        getSupportActionBar().hide();
         setContentView(R.layout.activity_second);
 
         init();
@@ -166,8 +172,11 @@ public class SecondActivity extends AppCompatActivity implements OnMapReadyCallb
                 count++;
                 if (count%2==1) {
                     findViewById(R.id.information).setVisibility(View.VISIBLE);
+                    OpenInfoButton.setText("설명 닫기");
+
                 } else {
                     findViewById(R.id.information).setVisibility(View.GONE);
+                    OpenInfoButton.setText("설명 열기");
                 }
             }
         });
@@ -191,8 +200,10 @@ public class SecondActivity extends AppCompatActivity implements OnMapReadyCallb
                 if (Count%2==1){
                     tts.setSpeechRate(1f);
                     tts.speak(InfoT.getText().toString(), TextToSpeech.QUEUE_FLUSH, null);
+                    SpeakButton.setText("그만 읽기");
                 } else {
                     tts.stop();
+                    SpeakButton.setText("설명 읽기");
                 }
             }
         });
@@ -227,6 +238,33 @@ public class SecondActivity extends AppCompatActivity implements OnMapReadyCallb
     {
         restaurant_map.clear();//지도 클리어
 
+        restaurant_map.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
+            @Override
+            public View getInfoWindow(Marker marker) {
+                return null;
+            }
+
+            @Override
+            public View getInfoContents(Marker marker) {
+                LinearLayout info = new LinearLayout(getApplicationContext());
+                info.setOrientation(LinearLayout.VERTICAL);
+                TextView title = new TextView(getApplicationContext());
+                title.setTextColor(Color.BLACK);
+                Typeface face = ResourcesCompat.getFont(getApplicationContext(), R.font.ridibatang);
+                title.setGravity(Gravity.CENTER);
+                title.setTypeface(null, Typeface.BOLD);
+                title.setText(marker.getTitle());
+                title.setTypeface(face);
+                TextView snippet = new TextView(getApplicationContext());
+                snippet.setTextColor(Color.GRAY);
+                snippet.setText(marker.getSnippet());
+                snippet.setTypeface(face);
+                info.addView(title);
+                info.addView(snippet);
+                return info;
+            }
+        });
+
         //marker를 선택했을 때 Detail 불러옴
         restaurant_map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
@@ -236,7 +274,15 @@ public class SecondActivity extends AppCompatActivity implements OnMapReadyCallb
                         try {
                             RequestItem result = task.execute(item).get();
 
-                            marker.setSnippet(result.address+String.format("%2f", result.rating));
+                            if (result.address.equals("")) {
+                                marker.setSnippet("주소: 미등록 " + "\n"+"평점: 미등록 ");
+                            } else {
+
+                                marker.setSnippet("주소: " + result.address+"\n"+"평점: " + String.valueOf(result.rating));
+
+                            }
+
+
 
                         } catch (InterruptedException e) {
                             e.printStackTrace();
@@ -247,7 +293,7 @@ public class SecondActivity extends AppCompatActivity implements OnMapReadyCallb
                 return false;
             }
         });
-      
+
         if (previous_marker != null)
             previous_marker.clear();//지역정보 마커 클리어
 
@@ -288,20 +334,26 @@ public class SecondActivity extends AppCompatActivity implements OnMapReadyCallb
     public void show_landmark(String landmark){
         MarkerOptions show_marker = new MarkerOptions();
         show_marker.position(new LatLng(lat, lon));
-
         switch (landmark.toLowerCase()){
             case "big ben":
                 show_marker.icon(BitmapDescriptorFactory.fromResource(R.drawable.big_ben_pin));
                 break;
             case "london eye":
+                show_marker.icon(BitmapDescriptorFactory.fromResource(R.drawable.london_eye_pin));
                 break;
             case "tower bridge" :
+                show_marker.icon(BitmapDescriptorFactory.fromResource(R.drawable.tower_bridge_pin));
                 break;
             case "victoria and albert museum" :
+                show_marker.icon(BitmapDescriptorFactory.fromResource(R.drawable.museum_pin));
+                break;
+            default:
+                show_marker.icon(BitmapDescriptorFactory.fromResource(R.drawable.location_pin));
                 break;
         }
         restaurant_map.addMarker(show_marker);
     }
+
 
     public void init() {
 
