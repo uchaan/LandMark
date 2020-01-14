@@ -96,6 +96,7 @@ public class sendDetailsRequest extends AsyncTask<RequestItem, Void, RequestItem
 
         } catch (JSONException e) {
             Log.e(LOG_TAG, "Error processing JSON results", e);
+            result_item = new RequestItem().setError();
         }
 
         return result_item;

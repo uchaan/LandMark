@@ -15,6 +15,7 @@ public class RequestItem {
     public String id;
     public double rating;
     public String address;
+    public String error = "success";
 
 
     public RequestItem(){}
@@ -49,6 +50,13 @@ public class RequestItem {
         RequestItem result = new RequestItem();
         result.rating = rating;
         result.address = address;
+
+        return result;
+    }
+
+    public RequestItem setError(){
+        RequestItem result = new RequestItem();
+        result.error = "error";
 
         return result;
     }

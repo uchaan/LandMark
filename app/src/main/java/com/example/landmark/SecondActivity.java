@@ -4,11 +4,16 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -50,6 +55,10 @@ public class SecondActivity extends AppCompatActivity implements OnMapReadyCallb
     MapView map;
     GoogleMap restaurant_map;
 
+    String request_type = "restaurant";
+    int search_bound = 500;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -71,10 +80,59 @@ public class SecondActivity extends AppCompatActivity implements OnMapReadyCallb
         button_show.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showPlaceInformation(new LatLng(lat, lon), PlaceType.RESTAURANT);
+//                showPlaceInformation(request_type);
+                AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
+                View view = LayoutInflater.from(v.getContext()).inflate(R.layout.place_type, null, false);
+                builder.setView(view);
+
+                final AlertDialog dialog = builder.create();
+                final Button button_close = view.findViewById(R.id.place_type_close);
+                final Button button_search = view.findViewById(R.id.place_type_search);
+                final Spinner spinner_placetype = view.findViewById(R.id.select_place_type);
+                final EditText text_search_bound = view.findViewById(R.id.place_search_bound);
+
+
+                button_close.setOnClickListener(new View.OnClickListener() {
+                    public void onClick(View v) {
+                        dialog.dismiss();
+                    }
+                });
+
+
+                spinner_placetype.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                    @Override
+                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                        request_type = parent.getItemAtPosition(position).toString();
+                        Toast.makeText(getApplicationContext(), request_type, Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onNothingSelected(AdapterView<?> parent) {}
+                });
+
+                dialog.show();
+
+                button_search.setOnClickListener(new View.OnClickListener() {
+                    public void onClick(View v) {
+
+                        // 사용자가 범위 입력 안함
+                        if (text_search_bound.getText().toString().equals(""))
+                            Toast.makeText(getApplicationContext(), "범위를 입력해 주세요!", Toast.LENGTH_SHORT).show();
+
+                        // 사용자가 범위 입력 완료
+                        else {
+                            search_bound = Integer.parseInt(text_search_bound.getText().toString());
+//                            Toast.makeText(getApplicationContext(), ""+search_bound, Toast.LENGTH_SHORT).show();
+                            showPlaceInformation(request_type, search_bound);
+                            dialog.dismiss();
+                        }
+                    }
+                });
+
             }
         });
 
+ 
         // 이전 액티비티에서 넘겨준 값들 다 받기
         Intent intent = getIntent();
         name = intent.getExtras().getString("name");
@@ -165,10 +223,11 @@ public class SecondActivity extends AppCompatActivity implements OnMapReadyCallb
     // Show Restaurant 버튼 눌렀을 때 호출됨
     // 서버에서 이름, 아이디, 위도, 경도 받아옴
     // 위도 경도에 맞게 지도에 마커 찍어줌
-    public void showPlaceInformation(LatLng location, String type)
+    public void showPlaceInformation(String type, int radius)
     {
         restaurant_map.clear();//지도 클리어
 
+        //marker를 선택했을 때 Detail 불러옴
         restaurant_map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
@@ -192,21 +251,30 @@ public class SecondActivity extends AppCompatActivity implements OnMapReadyCallb
         if (previous_marker != null)
             previous_marker.clear();//지역정보 마커 클리어
 
-        RequestItem item = new RequestItem("restaurant", lat, lon, 500);
+        //사용자가 지정한 type 에 따라 서버에 Request 보내서 정보 받아옴
+        RequestItem item = new RequestItem(type, lat, lon, radius);
         sendRequest task = new sendRequest();
         try {
             ArrayList<RequestItem> result = task.execute(item).get();
 
             for (int i = 0; i < result.size(); i++){
+
+                if (result.get(i).error.equals("error")) {
+                    Toast.makeText(getApplicationContext(), "검색 결과가 없어요 ㅜㅜ", Toast.LENGTH_SHORT).show();
+                    break;
+                }
+
                 myMarker = restaurant_map.addMarker(new MarkerOptions()
                             .position(new LatLng(result.get(i).lat, result.get(i).lng))
                             .title(result.get(i).name)
                             .icon(BitmapDescriptorFactory.fromResource(R.drawable.location_pin))
                             .snippet(result.get(i).id));
+              
+                myMarker.setTag(new LatLng(result.get(i).lat, result.get(i).lng));
+                Toast.makeText(getApplicationContext(), "위치 정보를 받아왔어요!! : "+result.get(0).name, Toast.LENGTH_SHORT).show();
 
-                myMarker.setTag(result.get(i).id);
             }
-            Toast.makeText(getApplicationContext(), "Show place information!! : "+result.get(0).name, Toast.LENGTH_SHORT).show();
+
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (ExecutionException e) {
