@@ -8,19 +8,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import androidx.core.content.ContextCompat;
 
-
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.FileUtils;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -30,7 +23,6 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.ml.vision.FirebaseVision;
-import com.google.firebase.ml.vision.cloud.FirebaseVisionCloudDetectorOptions;
 import com.google.firebase.ml.vision.cloud.landmark.FirebaseVisionCloudLandmark;
 import com.google.firebase.ml.vision.cloud.landmark.FirebaseVisionCloudLandmarkDetector;
 import com.google.firebase.ml.vision.common.FirebaseVisionImage;
@@ -38,41 +30,37 @@ import com.google.firebase.ml.vision.common.FirebaseVisionLatLng;
 import com.yalantis.ucrop.UCrop;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 
 import java.util.ArrayList;
-
-import java.net.URI;
 
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    ImageView imageView;
-    Button button;
-    RecyclerView recyclerView;
-    List<FirebaseVisionCloudLandmark> init;
+    private ImageView imageView;
+    private Button button;
+    private RecyclerView recyclerView;
+    private List<FirebaseVisionCloudLandmark> init;
     private String currentPhotoPath = "";
-    FirebaseVisionImage image;
+    private FirebaseVisionImage image;
     private final int GET_GALLERY_IMAGE = 200;
-    TextView text_count;
+    private TextView text_count;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        getSupportActionBar().hide();
         setContentView(R.layout.activity_main);
 
-        // 앱 시작 전 권한 요청
-        permission permission_check = new permission();
-        permission_check.checkPermissions(MainActivity.this);
+        Intent loading = new Intent(this, LoadingActivity.class);
+        startActivity(loading);
 
-        imageView = (ImageView) findViewById(R.id.image);
-        text_count = (TextView) findViewById(R.id.landmark_count);
+        init();
 
-        button = (Button)findViewById(R.id.button);
+        // 사진 불러오기 버튼 설정.
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -134,7 +122,6 @@ public class MainActivity extends AppCompatActivity {
         // [END image_from_path]
     }
 
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode,resultCode,data);
@@ -156,7 +143,8 @@ public class MainActivity extends AppCompatActivity {
         } else if (resultCode==RESULT_OK && requestCode == UCrop.REQUEST_CROP) {
             final Uri resultUri = UCrop.getOutput(data);
             imageView.setImageURI(resultUri);
-            button.setText("Another Image");
+            imageView.setVisibility(View.VISIBLE);
+            button.setText("다른 사진 가져오기");
 
             imageFromPath(this, resultUri);
 
@@ -181,7 +169,7 @@ public class MainActivity extends AppCompatActivity {
                                             inLondonChecker(firebaseVisionCloudLandmarks);
                                     if(updated_result.isEmpty()){
                                         Toast.makeText(getApplicationContext(),
-                                                "런던의 랜드마크가 아니네요! ^^", Toast.LENGTH_LONG).show();
+                                                firebaseVisionCloudLandmarks.get(0).getLandmark()+"은 런던의 랜드마크가 아니네요! ^^", Toast.LENGTH_LONG).show();
                                         text_count.setVisibility(View.INVISIBLE);
 
                                         // RecyclerView 초기화
@@ -194,7 +182,7 @@ public class MainActivity extends AppCompatActivity {
                                     // top3 (또는 그 이하) RecyclerView 보여주기
                                     else{
                                         int min_item = Math.min(3, updated_result.size());
-                                        text_count.setText("총 "+min_item+"개를 찾았어요!");
+                                        text_count.setText("      "+min_item+"개를 찾았어요!");
                                         text_count.setVisibility(View.VISIBLE);
 
                                         landmark_candidate_adapter adapter =
@@ -239,6 +227,16 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         return updated_arr;
+    }
+
+    public void init(){
+        // 앱 시작 전 권한 요청
+        permission permission_check = new permission();
+        permission_check.checkPermissions(MainActivity.this);
+
+        imageView = (ImageView) findViewById(R.id.image);
+        text_count = (TextView) findViewById(R.id.landmark_count);
+        button = (Button)findViewById(R.id.button);
     }
 
 

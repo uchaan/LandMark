@@ -1,6 +1,7 @@
 package com.example.landmark;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
 import android.view.LayoutInflater;
@@ -26,16 +27,12 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.ExecutionException;
 
 
-import noman.googleplaces.Place;
 import noman.googleplaces.PlaceType;
-import noman.googleplaces.PlacesException;
-import noman.googleplaces.PlacesListener;
 
 import static android.speech.tts.TextToSpeech.ERROR;
 
@@ -43,15 +40,14 @@ public class SecondActivity extends AppCompatActivity implements OnMapReadyCallb
 
     private Marker myMarker;
 
-
-
-    String name, confidence;
+    private String name;
+    private String OpenChat;
     double lat, lon;
 
-    Button button_show, button_request;
+    private TextView InfoT, WebT, TicketT, NameT;
 
-    TextView InfoT, WebT, TicketT, NameT;
-    Button SpeakButton, OpenInfoButton;
+    private Button button_show, button_chat;
+    private Button SpeakButton, OpenInfoButton;
 
     private TextToSpeech tts;
 
@@ -66,17 +62,10 @@ public class SecondActivity extends AppCompatActivity implements OnMapReadyCallb
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
         setContentView(R.layout.activity_second);
 
-        NameT = (TextView) findViewById(R.id.name);
-        InfoT = (TextView) findViewById(R.id.info);
-        WebT = (TextView) findViewById(R.id.website);
-        TicketT = (TextView) findViewById(R.id.ticket);
-
-        SpeakButton = (Button) findViewById(R.id.speak);
-        OpenInfoButton = (Button) findViewById(R.id.openInfo);
-
-        map = (MapView) findViewById(R.id.map_restaurant);
+        init();
 
         if (map != null)
         {
@@ -88,7 +77,6 @@ public class SecondActivity extends AppCompatActivity implements OnMapReadyCallb
         previous_marker = new ArrayList<Marker>();
 
         // 서버에 request 보내서 지도에 레스토랑 찍는 버튼
-        button_show = (Button)findViewById(R.id.show_restaurant);
         button_show.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -144,21 +132,31 @@ public class SecondActivity extends AppCompatActivity implements OnMapReadyCallb
             }
         });
 
-      
+ 
         // 이전 액티비티에서 넘겨준 값들 다 받기
         Intent intent = getIntent();
         name = intent.getExtras().getString("name");
-        confidence = intent.getExtras().getString("confidence");
         lat = intent.getExtras().getDouble("latitude");
         lon = intent.getExtras().getDouble("longitude");
 
+        // 타이틀 띄우기
         NameT.setText(name);
 
-        // 가져온 랜드마크 이름으로 랜드마크 설명 정보 가져오기 .
+        // 가져온 랜드마크 이름으로 랜드마크 데이 가져오기 .
         landmark_info landmark = new landmark_info().get(name.toLowerCase());
         InfoT.setText(landmark.info);
         WebT.setText(landmark.website);
         TicketT.setText(landmark.ticket);
+        OpenChat = landmark.OpenChatting;
+
+        // 오픈채팅 버튼 링크 설정.
+        button_chat.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(OpenChat));
+                startActivity(intent);
+            }
+        });
 
         // 설명 보기 버튼 설정.
         OpenInfoButton.setOnClickListener(new View.OnClickListener() {
@@ -171,7 +169,6 @@ public class SecondActivity extends AppCompatActivity implements OnMapReadyCallb
                 } else {
                     findViewById(R.id.information).setVisibility(View.GONE);
                 }
-
             }
         });
 
@@ -212,7 +209,6 @@ public class SecondActivity extends AppCompatActivity implements OnMapReadyCallb
         }
     }
 
-
     @Override
     public void onMapReady(GoogleMap googleMap) {
         MapsInitializer.initialize(getApplicationContext());
@@ -239,6 +235,7 @@ public class SecondActivity extends AppCompatActivity implements OnMapReadyCallb
                         RequestItem item = new RequestItem().requestDetailsItem(marker.getSnippet());
                         try {
                             RequestItem result = task.execute(item).get();
+
                             marker.setSnippet(result.address+String.format("%2f", result.rating));
 
                         } catch (InterruptedException e) {
@@ -250,8 +247,7 @@ public class SecondActivity extends AppCompatActivity implements OnMapReadyCallb
                 return false;
             }
         });
-
-
+      
         if (previous_marker != null)
             previous_marker.clear();//지역정보 마커 클리어
 
@@ -273,7 +269,7 @@ public class SecondActivity extends AppCompatActivity implements OnMapReadyCallb
                             .title(result.get(i).name)
                             .icon(BitmapDescriptorFactory.fromResource(R.drawable.location_pin))
                             .snippet(result.get(i).id));
-
+              
                 myMarker.setTag(new LatLng(result.get(i).lat, result.get(i).lng));
                 Toast.makeText(getApplicationContext(), "위치 정보를 받아왔어요!! : "+result.get(0).name, Toast.LENGTH_SHORT).show();
 
@@ -287,8 +283,6 @@ public class SecondActivity extends AppCompatActivity implements OnMapReadyCallb
 
         show_landmark(name);
     }
-
-
 
     // String Parameter 에 따라 다른 아이콘 표시
     public void show_landmark(String landmark){
@@ -307,6 +301,22 @@ public class SecondActivity extends AppCompatActivity implements OnMapReadyCallb
                 break;
         }
         restaurant_map.addMarker(show_marker);
+    }
+
+    public void init() {
+
+        NameT = (TextView) findViewById(R.id.name);
+        InfoT = (TextView) findViewById(R.id.info);
+        WebT = (TextView) findViewById(R.id.website);
+        TicketT = (TextView) findViewById(R.id.ticket);
+
+        SpeakButton = (Button) findViewById(R.id.speak);
+        OpenInfoButton = (Button) findViewById(R.id.openInfo);
+
+        map = (MapView) findViewById(R.id.map_restaurant);
+
+        button_show = (Button)findViewById(R.id.show_restaurant);
+        button_chat = (Button)findViewById(R.id.chat);
     }
 
 }
