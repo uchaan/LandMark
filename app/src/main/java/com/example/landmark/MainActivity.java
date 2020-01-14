@@ -143,7 +143,8 @@ public class MainActivity extends AppCompatActivity {
         } else if (resultCode==RESULT_OK && requestCode == UCrop.REQUEST_CROP) {
             final Uri resultUri = UCrop.getOutput(data);
             imageView.setImageURI(resultUri);
-            button.setText("Another Image");
+            imageView.setVisibility(View.VISIBLE);
+            button.setText("다른 사진 가져오기");
 
             imageFromPath(this, resultUri);
 
@@ -168,7 +169,7 @@ public class MainActivity extends AppCompatActivity {
                                             inLondonChecker(firebaseVisionCloudLandmarks);
                                     if(updated_result.isEmpty()){
                                         Toast.makeText(getApplicationContext(),
-                                                "런던의 랜드마크가 아니네요! ^^", Toast.LENGTH_LONG).show();
+                                                firebaseVisionCloudLandmarks.get(0).getLandmark()+"은 런던의 랜드마크가 아니네요! ^^", Toast.LENGTH_LONG).show();
                                         text_count.setVisibility(View.INVISIBLE);
 
                                         // RecyclerView 초기화
@@ -181,7 +182,7 @@ public class MainActivity extends AppCompatActivity {
                                     // top3 (또는 그 이하) RecyclerView 보여주기
                                     else{
                                         int min_item = Math.min(3, updated_result.size());
-                                        text_count.setText("총 "+min_item+"개를 찾았어요!");
+                                        text_count.setText("      "+min_item+"개를 찾았어요!");
                                         text_count.setVisibility(View.VISIBLE);
 
                                         landmark_candidate_adapter adapter =
