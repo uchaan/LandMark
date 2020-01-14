@@ -18,6 +18,7 @@
             android:layout_weight="1"
             android:fontFamily="@font/baemin"
             android:text="name"
+            android:layout_marginLeft="15dp"
             android:textColor="@android:color/black"
             android:textSize="30dp" />
 
@@ -26,8 +27,8 @@
             android:layout_height="50dp"
             android:id="@+id/speak"
             android:textColor="@color/white"
-            android:background="@drawable/woman_ss"
-            ></Button>
+            android:layout_marginRight="15dp"
+            android:background="@drawable/woman_ss"/>
 
 
 
@@ -92,27 +93,31 @@
         android:layout_marginTop="10dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center_horizontal">
+        android:gravity="center_horizontal"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp">
 
         <Button
-            android:layout_width="180dp"
+            android:layout_width="0dp"
+            android:layout_weight="1"
             android:layout_height="40dp"
             android:fontFamily="@font/baemin"
             android:textColor="@color/pink"
             android:id="@+id/show_restaurant"
             android:text="주변 장소 검색 "
             android:background="@drawable/round_button"
-            android:layout_marginRight="10dp"></Button>
+            android:layout_marginRight="8dp"/>
 
         <Button
             android:id="@+id/chat"
+            android:layout_width="0dp"
+            android:layout_weight="1"
             android:layout_height="40dp"
             android:textColor="@color/pink"
             android:fontFamily="@font/baemin"
             android:background="@drawable/round_button"
-            android:layout_width="180dp"
-            android:layout_marginLeft="10dp"
-            android:text="오픈 채팅"></Button>
+            android:layout_marginLeft="8dp"
+            android:text="오픈 채팅"/>
 
     </LinearLayout>
 
